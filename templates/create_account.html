@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Assist | Create account</title>
+    </head>
+
+    <body>
+        <h1><a href="/">Assist</a></h1>
+
+        <h2>Uusi tili</h2>
+
+        <h3>Tervetuloa Assist-sovellukseen!</h3>
+        <h4>Ole hyvä ja tee uuden tilin.</h4>
+        <form action="/register" method="post">
+            <p>
+                Luo käyttäjätunnus: 
+                <input type="text" name="new_username" maxlength="20">
+                <br></br>
+                Luo salasana: 
+                <input type="password" name="new_password" maxlength="200">
+                <br></br>
+                Kirjoita salasana uudestaan: 
+                <input type="password" name="new_password2" maxlength="200">
+            </p>
+            <input type="submit" value="Create account">
+        </form>
+    </body>
+</html>

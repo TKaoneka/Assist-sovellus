@@ -36,6 +36,10 @@ def show_profile(user_id):
 def create():
     pass
 
+@app.route("/product/<int:product_id>")
+def show_product(product_id):
+    pass
+
 @app.route("/edit_product/<int:product_id>")
 def edit_product(product_id):
     pass

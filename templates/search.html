@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>Assist</title>
+    </head>
+
+    <body>
+        <h1><a href="/">Assist</a></h1>
+        <form action="/search" method="get" size="60" maxlength="200">
+            <p>
+                Etsi:
+                {% if result %}
+                <input type="text" name="searchbar" value="{{ result }}" />
+                {% else %}
+                <input type="text" name="searchbar" />
+                {% endif %}
+            </p>
+            <input type="submit" value="Hae">
+        </form>
+
+        {% if result %}
+        <h2>Hakutulokset</h2>
+        <ul>
+        {% for p in products %}
+            <li>
+                <h3><a href="/product/{{ p.id }}">{{ p.title }}</a></h3>
+                <p><a href="/profile/{{ p.creator_id }}">{{ p.username }}</a> {{ p.time_posted }}</p>
+            </li>
+        {% endfor %}
+        {% endif %}
+    </body>
+</html>

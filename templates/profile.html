@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>Assist</title>
+    </head>
+
+    <body>
+        <h1><a href="/">Assist</a></h1>
+
+        <h2>Profiili ({{ *username* }})</h2>
+
+        {% if session.id == user_id %}
+        <p><a href="/new_product">Julkaise uuden tuotteen</a></p>
+        <p><a href="/logout">Kirjaudu ulos</a></p>
+        {% endif %}
+
+        <h3>Tuotteet (yhteensä {{ *total amount* }})</h3>
+        <ul>
+            {% for p in products %}
+            <li>
+                <h3><a href="/product/{{ p.id }}">{{ p.title }}</a></h3>
+                <p><a href="/profile/{{ p.creator_id }}">{{ p.username }}</a> {{ p.time_posted }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h3>Arvostelut ({{ *total reviews* }}, KA {{ *review gpa* }})</h3>
+        <ul>
+            {% for r in reviews %}
+            <li>
+                <h4><a href="/product/{{ r.product_id }}">{{ r.title }}</a></h4>
+                <h3>{{ r.rating }}/5</h3>
+                <p>{{ r.time_posted }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <p>*tykkäykset*</p>
+    </body>
+</html>
