@@ -10,11 +10,14 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    products = forum.get_posts()
+    return render_template("index.html", products=products)
 
 @app.route("/search")
 def search():
-    pass
+    search = request.args.get("searchbar")
+    products = forum.get_search(search)
+    return render_template("search.html", products=products)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -35,10 +38,10 @@ def register():
             user_id = forum.create_account(username, hash)
         except sqlite3.IntegrityError:
             viesti = "Tunnus on jo käytössä. Ole hyvä ja kokeile uudestaan"
-            return render_template("new_account.html", caution=viesti)
+            return render_template("create_account.html", caution=viesti)
         session["id"] = user_id
         session["username"] = username
-        return render_template("account_created.html")
+        return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -50,13 +53,13 @@ def login():
         password = request.form["login_password"]
 
         try:
-            info = forum.get_account(username)
+            account = forum.get_account(username)
         except IndexError:
             viesti = "Väärä tunnus tai salasana. Kokeile uudestaan :)"
             return render_template("login.html", caution=viesti)
         
-        if check_password_hash(info[1], password):
-            session["id"] = info[0]
+        if check_password_hash(account[1], password):
+            session["id"] = account[0]
             session["username"] = username
             return redirect("/")
         else:
@@ -70,26 +73,73 @@ def logout():
 
     return redirect("/")
 
+@app.route("/new_product", methods=["GET", "POST"])
+def create_product():
+    if request.method == "GET":
+        return render_template("product_create.html")
+    
+    if request.method == "POST":
+
+        if "cancel" in request.form:
+            return redirect("/")
+        
+        if "confirm" in request.form:
+
+            title = request.form["title"]
+            subtitle = request.form["subtitle"]
+            type = request.form["type"]
+            thumbnail = request.files["thumbnail"]
+            product_desc = request.form["product_description"]
+
+        thumbnail_photo = thumbnail.read()
+        if len(thumbnail_photo) > 1000 * 1024:
+            message = "Kuva on liian suuri!"
+            return render_template("product_create.html", caution=message)
+        
+        product_id = forum.create_product(title, session["id"], subtitle, type, thumbnail_photo, product_desc)
+        return redirect(f"/product/{product_id}")
+
+@app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
+def modify_product(product_id):
+    if request.method == "GET":
+        return render_template("product_modify.html")
+    
+    if request.method == "POST":
+
+        if "cancel" in request.form:
+            return redirect("/")
+        
+        if "confirm" in request.form:
+            title = request.form["title"]
+            subtitle = request.form["subtitle"]
+            product_desc = request.form["product_description"]
+
+            forum.modify_product(title, subtitle, product_desc, product_id)
+            return redirect(f"/product/{product_id}")
+
+@app.route("/product/<int:product_id>")
+def show_product(product_id):
+    product_info = forum.get_product(product_id)
+
+    return render_template("product.html", product=product_info, product_id=product_id)
+
+@app.route("/delete_product/<int:product_id>", methods=["GET", "POST"])
+def delete_product(product_id):
+    if request.method == "GET":
+        return render_template("product_delete.html")
+    
+    if request.method == "POST":
+        if "cancel" in request.form:
+            return redirect(f"/product/{product_id}")
+        
+        if "confirm" in request.form:
+            forum.delete_product(product_id)
+            return redirect("/")
+
 @app.route("/profile/<int:user_id>")
 def show_profile(user_id):
     pass
 
-@app.route("/new_product")
-def create_product():
-    pass
-
-@app.route("/modify_product")
-def modify_product():
-    pass
-
-@app.route("/product/<int:product_id>")
-def show_product(product_id):
-    pass
-
-@app.route("/edit_product/<int:product_id>")
-def edit_product(product_id):
-    pass
-
-@app.route("/delete_product/<int:product_id>")
-def delete_product(product_id):
+@app.route("/thumbnail/<int:product_id>")
+def show_thumbnail(product_id):
     pass

@@ -11,9 +11,9 @@ CREATE TABLE posts (
     title TEXT,
     creator_id INTEGER REFERENCES users(id),
     sub_title TEXT,
-    time_posted TEXT,
     descript TEXT,
-    product_info TEXT,
+    product_or_service TEXT,
+    time_posted TEXT,
     image BLOB
 );
 

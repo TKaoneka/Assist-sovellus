@@ -24,10 +24,6 @@
                 <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteestasi">
             </p>
             
-            <p>
-                <b>Vaihda kuva:</b>
-                <input type="file" name="thumbnail" accept=".jpg"/>
-            </p>
 
             <p>
                 <b>Kuvaus tuotteestasi:</b><br />
@@ -36,8 +32,8 @@
 
             <form action="/modify_product" method="post">
                 <h3>Haluatko muokata tuotteesi?</h3>
-                <input type="submit" value="Kyllä" />
-                <input type="submit" value="Ei" />
+                <input type="submit" name="confirm" value="Kyllä" />
+                <input type="submit" name="cancel" value="Ei" />
             </form>
     </body>
 </html>
