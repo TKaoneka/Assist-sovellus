@@ -2,7 +2,8 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE,
     password_hash TEXT,
-    descript TEXT
+    descript TEXT,
+    image BLOB
 );
 
 CREATE TABLE posts (
@@ -12,7 +13,8 @@ CREATE TABLE posts (
     sub_title TEXT,
     time_posted TEXT,
     descript TEXT,
-    service_or_product INTEGER
+    product_info TEXT,
+    image BLOB
 );
 
 CREATE TABLE reviews (
@@ -29,4 +31,13 @@ CREATE TABLE likes (
     id INTEGER PRIMARY KEY,
     liker INTEGER REFERENCES users(id),
     product_id INTEGER REFERENCES posts(id)
+);
+
+CREATE TABLE messages (
+    id INTEGER PRIMARY KEY,
+    string TEXT,
+    product_id INTEGER REFERENCES posts(id),
+    messanger INTEGER REFERENCES users(id),
+    messanged INTEGER REFERENCES users(id),
+    time_posted TEXT
 );

@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>Assist | Create product</title>
+    </head>
+
+    <body>
+        <h1>Assist</h1>
+        <h2>Luo uuden tuotteen</h2>
+
+        <form action="/check_product" method="post">
+            <h4>
+                Kirjoita otsikko: 
+                <input type="text" name="title" required/>
+            </h4>
+
+            <p>
+                <b>Kirjoita halutessa alaotsikon:</b>
+                <textarea name="subtitle" rows="5" cols="50" required></textarea>
+            </p>
+
+            <p>
+                <b>Myytkö palvelun tai tuotteen?</b><br />
+                <input type="radio" name="tuote" value="1" /> Tuote
+                <input type="radio" name="tuote" value="2" /> Palvelu
+            </p>
+
+            <p>
+                <b>Lisää jpg-tiedoston tuotteesta</b>, joka on maksimissaan 100 KT: 
+                <input type="file" name="thumbnail" accept=".jpg" required/>
+            </p>
+
+            <p>
+                <b>Lisää kuvauksen tuotteestasi:</b><br />
+                <textarea name="product_description" rows="5" cols="50" required></textarea>
+            </p>
+            
+            <h3>Haluatko julkaista tuotteesi?</h3>
+            <input type="submit" value="Kyllä" />
+            <input type="submit" value="Ei" />
+        </form>
+
+        <h4>*vaihtoehdot ja tuotteen määrittelemisen ei ole mahdollista myöhemmin muokata. Jos haluat niitä vaihtaa, tee uuden julkaisun*</h4>
+    </body>
+</html>

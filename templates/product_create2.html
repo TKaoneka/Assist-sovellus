@@ -1,18 +1,18 @@
 <html>
     <head>
-        <title>Assist | Modify product</title>
+        <title>Assist | Create product</title>
     </head>
 
     <body>
         <h1>Assist</h1>
             <h4>
                 Otsikko: <br />
-                <input type="text" name="title" value="{{ title }}" required/>
+                {{ title }}
             </h4>
 
             <p>
                 <b>Alaotsikko:</b> <br />
-                <textarea name="subtitle" rows="5" cols="50" value="{{ subtitle }}" required></textarea>
+                {{ subtitle }}
             </p>
 
             <p>
@@ -23,19 +23,14 @@
                 <b>Valitsemasi kuva:</b>
                 <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteestasi">
             </p>
-            
-            <p>
-                <b>Vaihda kuva:</b>
-                <input type="file" name="thumbnail" accept=".jpg"/>
-            </p>
 
             <p>
                 <b>Kuvaus tuotteestasi:</b><br />
-                <textarea name="product_description" rows="5" cols="50" value="{{ description }}" required></textarea>
+                {{ description }}
             </p>
 
-            <form action="/modify_product" method="post">
-                <h3>Haluatko muokata tuotteesi?</h3>
+            <form action="/new_product" method="post">
+                <h3>Haluatko julkaista tuotteesi?</h3>
                 <input type="submit" value="Kyllä" />
                 <input type="submit" value="Ei" />
             </form>
