@@ -87,7 +87,7 @@ def create_product():
 
             title = request.form["title"]
             subtitle = request.form["subtitle"]
-            type = request.form["type"]
+            type = 2
             thumbnail = request.files["thumbnail"]
             product_desc = request.form["product_description"]
 

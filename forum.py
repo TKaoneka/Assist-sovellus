@@ -11,8 +11,9 @@ def get_search(searched):
     sql = """SELECT p.title, p.creator_id, p.time_posted, 
     u.id, u.username 
     FROM posts p, users u 
-    WHERE u.id = p.creator_id AND p.title LIKE "%?%" ORDER BY p.id DESC"""
-    return db.query(sql, [searched])
+    WHERE u.id = p.creator_id AND p.title LIKE ? ORDER BY p.id DESC"""
+    search = "'%" + searched + "%'"
+    return db.query(sql, [search])
 
 def create_account(username, hash):
     sql = """INSERT INTO users (username, password_hash, descript) 
