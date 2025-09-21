@@ -25,10 +25,10 @@ def get_account(username):
     sql = """SELECT id, password_hash FROM users WHERE username = ?"""
     return db.query(sql, [username])[0]
 
-def create_product(title, user_id, subtitle, type, thumbnail_photo, product_desc):
+def create_product(title, user_id, subtitle, product_type, thumbnail_photo, product_desc):
     sql = """INSERT INTO posts (title, creator_id, sub_title, descript, product_or_service, time_posted, image) 
     VALUES (?, ?, ?, ?, ?, datetime('now'), ?)"""
-    db.execute(sql, [title, user_id, subtitle, product_desc, type, thumbnail_photo])
+    db.execute(sql, [title, user_id, subtitle, product_desc, product_type, thumbnail_photo])
     return db.last_insert_id()
 
 def modify_product(title, subtitle, product_desc, product_id):
