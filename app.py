@@ -91,13 +91,13 @@ def create_product():
             thumbnail = request.files["thumbnail"]
             product_desc = request.form["product_description"]
 
-        thumbnail_photo = thumbnail.read()
-        if len(thumbnail_photo) > 1000 * 1024:
-            message = "Kuva on liian suuri!"
-            return render_template("product_create.html", caution=message)
-        
-        product_id = forum.create_product(title, session["id"], subtitle, type, thumbnail_photo, product_desc)
-        return redirect(f"/product/{product_id}")
+            thumbnail_photo = thumbnail.read()
+            if len(thumbnail_photo) > 1000 * 1024:
+                message = "Kuva on liian suuri!"
+                return render_template("product_create.html", caution=message)
+            
+            product_id = forum.create_product(title, session["id"], subtitle, type, thumbnail_photo, product_desc)
+            return redirect(f"/product/{product_id}")
 
 @app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
 def modify_product(product_id):

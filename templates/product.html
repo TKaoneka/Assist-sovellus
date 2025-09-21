@@ -11,6 +11,10 @@
         <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteesta">
         <p>{{ descript }}</p>
 
+        {% if session.id == creator_id %}
+        <p><a href="/modify_product/{{ product_id }}">Muokkaa</a> | <a href="/delete_product/{{ product_id }}">Poista</a></p>
+        {% else %}
         <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
+        {% endif %}
     </body>
 </html>
