@@ -5,6 +5,7 @@
 
     <body>
         <h1>Assist</h1>
+        <form action="/modify_product/{{ product_id }}" method="post" enctype="multipart/form-data">
             <h4>
                 Otsikko: <br />
                 <input type="text" name="title" value="{{ title }}" required/>
@@ -12,7 +13,7 @@
 
             <p>
                 <b>Alaotsikko:</b> <br />
-                <textarea name="subtitle" rows="5" cols="50" value="{{ subtitle }}" required></textarea>
+                <textarea name="subtitle" rows="2" cols="40" value="{{ subtitle }}" required></textarea>
             </p>
 
             <p>
@@ -30,10 +31,9 @@
                 <textarea name="product_description" rows="5" cols="50" value="{{ description }}" required></textarea>
             </p>
 
-            <form action="/modify_product" method="post">
-                <h3>Haluatko muokata tuotteesi?</h3>
+            <h3>Haluatko muokata tuotteesi?</h3>
                 <input type="submit" name="confirm" value="Kyllä" />
                 <input type="submit" name="cancel" value="Ei" />
-            </form>
+        </form>
     </body>
 </html>

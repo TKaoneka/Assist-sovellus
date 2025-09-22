@@ -96,7 +96,7 @@ def create_product():
                 message = "Kuva on liian suuri!"
                 return render_template("product_create.html", caution=message)
             
-            product_id = forum.create_product(title, session["id"], subtitle, type, thumbnail_photo, product_desc)
+            product_id = forum.create_product(title, session["id"], subtitle, product_type, thumbnail_photo, product_desc)
             return redirect(f"/product/{product_id}")
 
 @app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
@@ -107,7 +107,7 @@ def modify_product(product_id):
     if request.method == "POST":
 
         if "cancel" in request.form:
-            return redirect("/")
+            return redirect(f"/product/{product_id}")
         
         if "confirm" in request.form:
             title = request.form["title"]
@@ -119,9 +119,10 @@ def modify_product(product_id):
 
 @app.route("/product/<int:product_id>")
 def show_product(product_id):
-    product_info = forum.get_product(product_id)
+    title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
 
-    return render_template("product.html", product=product_info, product_id=product_id)
+    return render_template("product.html", title=title, creator_id=creator_id, sub_title=sub_title, 
+                           descript=descript, time_posted=time_posted, product_id=product_id)
 
 @app.route("/delete_product/<int:product_id>", methods=["GET", "POST"])
 def delete_product(product_id):
