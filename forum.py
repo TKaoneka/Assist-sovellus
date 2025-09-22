@@ -41,4 +41,4 @@ def delete_product(product_id):
 
 def get_product(product_id):
     sql = """SELECT title, creator_id, sub_title, descript, time_posted FROM posts WHERE id = ?"""
-    db.query(sql, [product_id])[0]
+    return db.query(sql, [product_id])[0]

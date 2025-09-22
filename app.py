@@ -102,7 +102,9 @@ def create_product():
 @app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
 def modify_product(product_id):
     if request.method == "GET":
-        return render_template("product_modify.html")
+        title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
+        return render_template("product_modify.html", title=title, sub_title=sub_title, 
+                           descript=descript, product_id=product_id)
     
     if request.method == "POST":
 
@@ -127,7 +129,7 @@ def show_product(product_id):
 @app.route("/delete_product/<int:product_id>", methods=["GET", "POST"])
 def delete_product(product_id):
     if request.method == "GET":
-        return render_template("product_delete.html")
+        return render_template("product_delete.html", product_id=product_id)
     
     if request.method == "POST":
         if "cancel" in request.form:
