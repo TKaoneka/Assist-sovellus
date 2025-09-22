@@ -23,6 +23,8 @@ Sovellus toimii palautuksen vaatimuksien mukaisesti, mutta on bugeja:
 
 * Tuotteen muokkaamisella ja poistamisella on bugi. Nämä sovelluksen reitit eivät tarkista jos tuotetta muokkaava/poistava on omistaja
 * Sovelluksessa on valmiiksi laitettu käyttäjäsivu ja pikkukuva piirteet, jotka eivät vielä toimi
+* Sovelluksessa ei ole vikailmoituksia esim. kun kirjautumisessa on virhe
+* Tuotteen muokkaus sivulta ei pääse pois ellei täytät kaikki laatikot, vaikka et haluakkaan muokata tuotetta
 
 Saat sovelluksen toimimaan näin:
 1. Kloonaa repositorion
