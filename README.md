@@ -27,9 +27,9 @@ Sovellus toimii palautuksen vaatimuksien mukaisesti, mutta on bugeja:
 Saat sovelluksen toimimaan näin:
 1. Kloonaa repositorion
 2. Avaa Bash ja kirjoita seuraavat komennot:
-**cd Assist-sovellus-main**
-**python3 -m venv venv**
-**source venv/bin/activate**
-**pip install flask**
-**sqlite3 database.db < assist.sql**
-**flask run**
+- **cd Assist-sovellus-main**
+- **python3 -m venv venv**
+- **source venv/bin/activate**
+- **pip install flask**
+- **sqlite3 database.db < assist.sql**
+- **flask run**
