@@ -11,3 +11,25 @@ Kurssiprojektini on sovellus nimeltään Assist. Assist on perus palvelunmyynti 
 * Sovelluksen käyttäjät voi luoda käyttäjätunnuksen sekä muokata oman käyttäjäsivun tiedot (esim. profiiilikuva ja bio)
 * Käyttäjä voi seurata myyjiä 
 * Koska sovellus on suhteellisen ameteurinen, sovelluksessa ei aio olla maksutapoja, mahdollisuutta lisätä esim. IBAN-tunnuksen myyjänä, vahvan tunnistautumisen tai muuta tarvittavia piirteitä tai henkilötietoja kauppa-sovelluksissa
+
+Välipalautus 2 (21.09.2025)
+Sovellus toimii palautuksen vaatimuksien mukaisesti, mutta on bugeja:
+
+* Käyttäjä voi luoda tunnuksen, sekä kirjautua sisään ja ulos
+* Käyttäjä ei voi kirjautua sisään väärillä tunnuksilla tai luoda tilin vaatimuksien ulkopuolella
+* Käyttäjä voi luoda, muokata ja poistaa tietokohteita eli tuotteita
+* Käyttäjä näkee muiden luomat tuotteet
+* Käyttäjä pystyy hakemaan tuotteita hakusanalla
+
+* Tuotteen muokkaamisella ja poistamisella on bugi. Nämä sovelluksen reitit eivät tarkista jos tuotetta muokkaava/poistava on omistaja
+* Sovelluksessa on valmiiksi laitettu käyttäjäsivu ja pikkukuva piirteet, jotka eivät vielä toimi
+
+Saat sovelluksen toimimaan näin:
+1. Kloonaa repositorion
+2. Avaa Bash ja kirjoita seuraavat komennot:
+**cd Assist-sovellus-main**
+**python3 -m venv venv**
+**source venv/bin/activate**
+**pip install flask**
+**sqlite3 database.db < assist.sql**
+**flask run**

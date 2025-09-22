@@ -12,7 +12,7 @@ def get_search(searched):
     u.id, u.username 
     FROM posts p, users u 
     WHERE u.id = p.creator_id AND p.title LIKE ? ORDER BY p.id DESC"""
-    search = f"'%{searched}%'"
+    search = f"%{searched}%"
     return db.query(sql, [search])
 
 def create_account(username, hash):

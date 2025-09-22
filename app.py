@@ -17,7 +17,7 @@ def index():
 def search():
     search = request.args.get("searchbar")
     products = forum.get_search(search)
-    return render_template("search.html", products=products)
+    return render_template("search.html", result=search, products=products)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
