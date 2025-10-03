@@ -42,3 +42,27 @@ def delete_product(product_id):
 def get_product(product_id):
     sql = """SELECT title, creator_id, sub_title, descript, time_posted FROM posts WHERE id = ?"""
     return db.query(sql, [product_id])[0]
+
+def get_profile(user_id, account_is_owned):
+    sql_1 = """SELECT username, image IS NOT NULL has_pfp FROM users WHERE id = ?"""
+    sql_2 = """SELECT id, title, sub_title, time_posted FROM posts WHERE creator_id = ?"""
+    sql_3 = """SELECT title, review, rating, time_posted, product_id FROM reviews WHERE reviewer = ?"""
+    sql_4 = """SELECT COUNT(p.title) total_posts, COUNT(r.title) total_reviews, AVG(r.rating) avg_rating 
+    FROM posts p LEFT JOIN reviews r ON p.creator_id = r.reviewer WHERE p.creator_id = ?"""
+
+    user = db.query(sql_1, [user_id])[0]
+    products = db.query(sql_2, [user_id]) or []
+    reviews = db.query(sql_3, [user_id]) or []
+    totals = db.query(sql_4, [user_id])[0] if db.query(sql_4, [user_id]) else {'total_posts': 0, 'total_reviews': 0, 'avg_rating': None}
+
+    if account_is_owned:
+        sql_5 = """SELECT product_id FROM likes WHERE liker = ?"""
+        sql_6 = """SELECT COUNT(id) total_likes FROM likes WHERE liker = ?"""
+        sql_7 = """SELECT id, messanged FROM messages WHERE messanger = ?"""
+
+        likes = db.query(sql_5, [user_id]) or [0]
+        total_likes = db.query(sql_6, [user_id])[0][0] if db.query(sql_6, [user_id]) else {'total_likes': 0}
+        threads = db.query(sql_7, [user_id]) or []
+        return user, products, reviews, totals, likes, total_likes, threads
+    
+    return user, products, reviews, totals

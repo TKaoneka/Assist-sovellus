@@ -1,39 +1,75 @@
 <html>
     <head>
-        <title>Assist</title>
+        <title>Assist | {{ user.username }}'s profile</title>
     </head>
 
     <body>
         <h1><a href="/">Assist</a></h1>
 
-        <h2>Profiili ({{ *username* }})</h2>
+        <h2>Profiili ({{ user.username }})</h2>
 
         {% if session.id == user_id %}
-        <p><a href="/new_product">Julkaise uuden tuotteen</a></p>
-        <p><a href="/logout">Kirjaudu ulos</a></p>
+
+        {% if user.has_pfp %}
+        <img src="/pfp/{{ user_id }}" alt="Profile picture" />
+        {% else %}
+        <h4><a href="/add_pfp/">Lisää profiilikuva</a></h4>
         {% endif %}
 
-        <h3>Tuotteet (yhteensä {{ *total amount* }})</h3>
+        <p><b><a href="/new_product">Julkaise uuden tuotteen</a></p></b>
+        <p><b><a href="/logout">Kirjaudu ulos</a></p></b>
+
+        <h4>Sinun viestit</h4>
         <ul>
-            {% for p in products %}
+            {% for t in threads %}
             <li>
-                <h3><a href="/product/{{ p.id }}">{{ p.title }}</a></h3>
-                <p><a href="/profile/{{ p.creator_id }}">{{ p.username }}</a> {{ p.time_posted }}</p>
+                <h4><a href="/thread/{{ t.id }}">{{ t.message }}</a></h4>
             </li>
             {% endfor %}
         </ul>
 
-        <h3>Arvostelut ({{ *total reviews* }}, KA {{ *review gpa* }})</h3>
+        {% endif %}
+
+        <h3>Tuotteet (yhteensä {{ total_posts }})</h3>
+        <ul>
+            {% for p in products %}
+            <li>
+                <h3><a href="/product/{{ p.id }}">{{ p.title }}</a></h3>
+                <b>{{ p.sub_title }}</b>
+                <p>{{ p.time_posted }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if avg_rating == None %}
+        <h3>Arvostelut (yhteensä {{ total_reviews }}, KA 0/5)</h3>
+        {% else %}
+        <h3>Arvostelut (yhteensä {{ total_reviews }}, KA {{ avg_rating }}/5)</h3>
+        {% endif %}
+
         <ul>
             {% for r in reviews %}
             <li>
                 <h4><a href="/product/{{ r.product_id }}">{{ r.title }}</a></h4>
-                <h3>{{ r.rating }}/5</h3>
+                <h5>{{ r.review }}</h5>
+                <h4>{{ r.rating }}/5</h4>
                 <p>{{ r.time_posted }}</p>
             </li>
             {% endfor %}
         </ul>
         
-        <p>*tykkäykset*</p>
+        {% if session.id == user_id %}
+        <h3>Sinun tykkäykset (yhteensä {{ total_likes }})</h3>
+        <ul>
+            {% for l in likes %}
+            <li>
+                <h4><a href="/product/{{ l.product_id }}">{{ l.title }}</a></h4>
+                <h3>{{ l.rating }}</h3>
+                <p>{{ l.time_posted }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
     </body>
 </html>

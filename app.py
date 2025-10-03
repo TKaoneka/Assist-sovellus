@@ -138,11 +138,30 @@ def delete_product(product_id):
         if "confirm" in request.form:
             forum.delete_product(product_id)
             return redirect("/")
+        
+@app.route("/thumbnail/<int:product_id>")
+def show_thumbnail(product_id):
+    pass
 
 @app.route("/profile/<int:user_id>")
 def show_profile(user_id):
+
+    if session["id"] == user_id:
+        user, products, reviews, totals, likes, total_likes, threads = forum.get_profile(user_id, True)
+
+        return render_template("profile.html", user=user, user_id=user_id, total_posts=totals[0], products=products, 
+                               total_reviews=totals[1], avg_rating=totals[2], reviews=reviews, 
+                               total_likes=total_likes, likes=likes, threads=threads)
+    else:
+        user, products, reviews, totals = forum.get_profile(user_id, False)
+
+        return render_template("profile.html", user=user, user_id=user_id, total_posts=totals[0], products=products, 
+                               total_reviews=totals[1], avg_rating=totals[2], reviews=reviews)
+
+@app.route("/add_pfp")
+def add_pfp():
     pass
 
-@app.route("/thumbnail/<int:product_id>")
-def show_thumbnail(product_id):
+@app.route("/pfp/<int:user_id>")
+def show_pfp(user_id):
     pass
