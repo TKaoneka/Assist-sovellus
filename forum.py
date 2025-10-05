@@ -26,7 +26,7 @@ def get_account(username):
     return db.query(sql, [username])[0]
 
 def create_product(title, user_id, subtitle, product_type, thumbnail_photo, product_desc):
-    sql = """INSERT INTO posts (title, creator_id, sub_title, descript, product_or_service, time_posted, image) 
+    sql = """INSERT INTO posts (title, creator_id, sub_title, descript, tags, time_posted, image) 
     VALUES (?, ?, ?, ?, ?, datetime('now'), ?)"""
     db.execute(sql, [title, user_id, subtitle, product_desc, product_type, thumbnail_photo])
     return db.last_insert_id()
@@ -66,3 +66,18 @@ def get_profile(user_id, account_is_owned):
         return user, products, reviews, totals, likes, total_likes, threads
     
     return user, products, reviews, totals
+
+def send_message(message, product_id, messanger, messaged):
+    sql = """INSERT INTO messages (string, product_id, messanger, messaged, time_sent) VALUES (?, ?, ?, ?, datetime('now'))"""
+    db.execute(sql, [message, product_id, messanger, messaged])
+
+def get_messaged(product_id):
+    sql = """SELECT creator_id FROM posts WHERE id = ?"""
+    return db.query(sql, [product_id])[0][0]
+
+def get_thread(product_id, user_id):
+    sql_1 = """SELECT m.string, m.time_sent, u.username FROM messages m, users u WHERE u.id = m.messanger OR u.id = m.messaged 
+    AND product_id = ? AND messanger = ? OR messaged = ? ORDER BY time_messaged DESC"""
+    sql_2 = """SELECT u.id, u.username, p.title FROM users u, posts p WHERE p.creator_id = u.id AND p.id = ?"""
+    seller_id, seller_username, title = db.query(sql_2, [product_id])[0]
+    return seller_id, seller_username, title, db.query(sql_1, [product_id, user_id, user_id])

@@ -12,7 +12,7 @@ CREATE TABLE posts (
     creator_id INTEGER REFERENCES users(id),
     sub_title TEXT,
     descript TEXT,
-    product_or_service TEXT,
+    tags TEXT,
     time_posted TEXT,
     image BLOB
 );
@@ -38,6 +38,6 @@ CREATE TABLE messages (
     string TEXT,
     product_id INTEGER REFERENCES posts(id),
     messanger INTEGER REFERENCES users(id),
-    messanged INTEGER REFERENCES users(id),
-    time_posted TEXT
+    messaged INTEGER REFERENCES users(id),
+    time_sent TEXT
 );

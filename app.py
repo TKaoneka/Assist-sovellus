@@ -88,6 +88,8 @@ def create_product():
             title = request.form["title"]
             subtitle = request.form["subtitle"]
             product_type = request.form["type"]
+            product_tags = request.form["tags"]
+            tags = product_type + product_tags
             thumbnail = request.files["thumbnail"]
             product_desc = request.form["product_description"]
 
@@ -96,7 +98,7 @@ def create_product():
                 message = "Kuva on liian suuri!"
                 return render_template("product_create.html", caution=message)
             
-            product_id = forum.create_product(title, session["id"], subtitle, product_type, thumbnail_photo, product_desc)
+            product_id = forum.create_product(title, session["id"], subtitle, tags, thumbnail_photo, product_desc)
             return redirect(f"/product/{product_id}")
 
 @app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
@@ -138,6 +140,24 @@ def delete_product(product_id):
         if "confirm" in request.form:
             forum.delete_product(product_id)
             return redirect("/")
+        
+@app.route("/new_message/<int:product_id>", methods=["POST"])
+def send_message(product_id):
+    message = request.form["message"]
+    messaged_id = forum.get_messaged(product_id)
+    forum.send_message(message, product_id, session["id"], messaged_id)
+    return redirect(f"/thread/{product_id}/{session["id"]}")
+
+@app.route("/thread/<int:product_id>/<int:user_id>", methods=["GET", "POST"])
+def show_thread(product_id, user_id):
+    if request.method == "GET":
+        seller_id, seller_username, title, messages = forum.get_thread(product_id, user_id)
+        return render_template("thread.html", seller_id=seller_id, seller_username=seller_username, title=title, 
+                               messages=messages)
+
+@app.route("/new_review", methods=["POST"])
+def make_review():
+    pass
         
 @app.route("/thumbnail/<int:product_id>")
 def show_thumbnail(product_id):

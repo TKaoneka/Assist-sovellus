@@ -12,9 +12,24 @@
         <p>{{ descript }}</p>
 
         {% if session.id == creator_id %}
+
         <p><a href="/modify_product/{{ product_id }}">Muokkaa</a> | <a href="/delete_product/{{ product_id }}">Poista</a></p>
+
         {% else %}
+
+        <form action="/new_message/{{ product_id }}" method="post">
         <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
+        <textarea name="message" rows="4" cols="50"></textarea>
+        <input type="submit" value="Lähetä">
+        </form>
+
+        <form action="/new_review/{{ product_id }}" method="post">
+        <p><b>Jos olet ostanut tuotteen,</b> ole hyvä ja kerro maailmalle mitä mieltä olet!</p>
+        <input type="text" name="review_title" />
+        <textarea name="review_text" rows="4" cols="50"></textarea>
+        <input type="submit" value="Lähetä">
+        </form>
+
         {% endif %}
     </body>
 </html>
