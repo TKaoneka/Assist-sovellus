@@ -8,6 +8,7 @@
         <h2>Luo uuden tuotteen</h2>
 
         <form action="/new_product" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
             <h4>
                 Kirjoita otsikko: 
                 <input type="text" name="title" required/>
@@ -32,6 +33,22 @@
             <p>
                 <b>Lisää kuvauksen tuotteestasi:</b><br />
                 <textarea name="product_description" rows="5" cols="50" required></textarea>
+            </p>
+
+            <p>
+                <b>Mitkä näistä parhaiten kuvaa tuotettasi? (Valitse ainakin yksi)</b><br />
+                <input type="checkbox" name="tags" value="A" /> Elintarvike
+                <input type="checkbox" name="tags" value="B" /> Viihde
+                <input type="checkbox" name="tags" value="C" /> Elektroniikka
+                <input type="checkbox" name="tags" value="D" /> Urheilu
+                <input type="checkbox" name="tags" value="E" /> Muoti
+                <input type="checkbox" name="tags" value="F" /> Lapset
+                <input type="checkbox" name="tags" value="G" /> Kauneus ja hyvinvointi
+                <input type="checkbox" name="tags" value="H" /> Musiikki
+                <input type="checkbox" name="tags" value="I" /> Taide
+                <input type="checkbox" name="tags" value="J" /> Harrastukset
+                <input type="checkbox" name="tags" value="K" /> Koti
+                <input type="checkbox" name="tags" value="L" /> Muu
             </p>
             
             <h3>Haluatko julkaista tuotteesi?</h3>

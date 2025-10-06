@@ -6,6 +6,7 @@
     <body>
         <h1>Assist</h1>
         <form action="/modify_product/{{ product_id }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
             <h4>
                 Otsikko: <br />
                 <input type="text" name="title" value="{{ title }}" required/>
@@ -13,7 +14,7 @@
 
             <p>
                 <b>Alaotsikko:</b> <br />
-                <textarea name="subtitle" rows="2" cols="40" value="{{ sub_title }}" required></textarea>
+                <textarea name="subtitle" rows="2" cols="40" value="{{ sub_title }}"></textarea>
             </p>
 
             <p>
@@ -22,7 +23,7 @@
 
             <p>
                 <b>Valitsemasi kuva:</b>
-                <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteestasi">
+                <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteestasi" required>
             </p>
             
 

@@ -17,19 +17,55 @@
 
         {% else %}
 
+        <hr />
         <form action="/new_message/{{ product_id }}" method="post">
-        <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
-        <textarea name="message" rows="4" cols="50"></textarea>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+
+            <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
+            <textarea name="message" rows="4" cols="50" required></textarea> <br />
+
         <input type="submit" value="Lähetä">
+
         </form>
 
+        <hr />
         <form action="/new_review/{{ product_id }}" method="post">
-        <p><b>Jos olet ostanut tuotteen,</b> ole hyvä ja kerro maailmalle mitä mieltä olet!</p>
-        <input type="text" name="review_title" />
-        <textarea name="review_text" rows="4" cols="50"></textarea>
-        <input type="submit" value="Lähetä">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+            
+            <p><b>Jos olet ostanut tuotteen,</b> ole hyvä ja kerro maailmalle mitä mieltä olet!</p>
+
+            <p>Otsikko:</p>
+            <input type="text" name="review_title" required/> <br />
+            
+            <p>Kerro enemmän tuotteesta:</p>
+            <textarea name="review_text" rows="4" cols="50"></textarea> <br />
+
+            <p>Arvioi: </p>
+            <input type="number" name="rating" min="1" max="5" required><p>/5</p> <br />
+            <input type="submit" value="Lähetä">
         </form>
 
         {% endif %}
+
+        <hr />
+        <h3>Arvostelut:</h3>
+
+        {% for r in reviews %}
+        
+        <h4>{{ r.title }}</h4>
+        <p>{{ r.review }}</p>
+        <h4>{{ r.rating }}/5</h4>
+        <p><a href="/profile/{{ r.reviewer }}">{{ r.username }}</a> ({{ r.time_posted }})</p>
+
+        {% if session.id == r.reviewer %}
+
+        <form action="/delete_review/{{ r.id }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+            <input type="submit" value="Poista">
+        </form>
+        {% endif %}
+        <hr />
+
+        {% endfor %}
     </body>
 </html>

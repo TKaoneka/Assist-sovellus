@@ -1,12 +1,17 @@
 from flask import Flask
-from flask import render_template, session, request, redirect, abort, make_response, g
+from flask import render_template, session, request, redirect, flash, abort, make_response, g
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import forum
 import sqlite3
+import secrets
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
 
 @app.route("/")
 def index():
@@ -30,17 +35,18 @@ def register():
         password_1 = request.form["new_password"]
         password_2 = request.form["new_password2"]
         if password_1 != password_2:
-            viesti = "Salasanat eivät ole samat. Ole hyvä ja kokeile uudestaan"
-            return render_template("create_account.html", caution=viesti)
+            flash("Salasanat eivät ole samat. Ole hyvä ja kokeile uudestaan")
+            return render_template("create_account.html")
         
         hash = generate_password_hash(password_1)
         try:
             user_id = forum.create_account(username, hash)
         except sqlite3.IntegrityError:
-            viesti = "Tunnus on jo käytössä. Ole hyvä ja kokeile uudestaan"
-            return render_template("create_account.html", caution=viesti)
+            flash("Tunnus on jo käytössä. Ole hyvä ja kokeile uudestaan")
+            return render_template("create_account.html")
         session["id"] = user_id
         session["username"] = username
+        session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -55,30 +61,34 @@ def login():
         try:
             account = forum.get_account(username)
         except IndexError:
-            viesti = "Väärä tunnus tai salasana. Kokeile uudestaan :)"
-            return render_template("login.html", caution=viesti)
+            flash("Väärä tunnus tai salasana. Kokeile uudestaan :)")
+            return render_template("login.html")
         
         if check_password_hash(account[1], password):
             session["id"] = account[0]
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
-            viesti = "Väärä tunnus tai salasana. Kokeile uudestaan :)"
-            return render_template("login.html", caution=viesti)
+            flash("Väärä tunnus tai salasana. Kokeile uudestaan :)")
+            return render_template("login.html")
 
 @app.route("/logout")
 def logout():
     del session["id"]
     del session["username"]
+    del session["csrf_token"]
 
     return redirect("/")
 
 @app.route("/new_product", methods=["GET", "POST"])
 def create_product():
+
     if request.method == "GET":
         return render_template("product_create.html")
     
     if request.method == "POST":
+        check_csrf()
 
         if "cancel" in request.form:
             return redirect("/")
@@ -103,12 +113,14 @@ def create_product():
 
 @app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
 def modify_product(product_id):
+
     if request.method == "GET":
         title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
         return render_template("product_modify.html", title=title, sub_title=sub_title, 
                            descript=descript, product_id=product_id)
     
     if request.method == "POST":
+        check_csrf()
 
         if "cancel" in request.form:
             return redirect(f"/product/{product_id}")
@@ -124,16 +136,23 @@ def modify_product(product_id):
 @app.route("/product/<int:product_id>")
 def show_product(product_id):
     title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
+    reviews = forum.get_reviews(product_id)
 
     return render_template("product.html", title=title, creator_id=creator_id, sub_title=sub_title, 
-                           descript=descript, time_posted=time_posted, product_id=product_id)
+                           descript=descript, time_posted=time_posted, product_id=product_id, reviews=reviews)
 
 @app.route("/delete_product/<int:product_id>", methods=["GET", "POST"])
 def delete_product(product_id):
+
     if request.method == "GET":
         return render_template("product_delete.html", product_id=product_id)
     
     if request.method == "POST":
+        check_csrf()
+
+        if "delete_product" in request.form:
+            return render_template("product_delete.html", product_id=product_id)
+        
         if "cancel" in request.form:
             return redirect(f"/product/{product_id}")
         
@@ -143,25 +162,35 @@ def delete_product(product_id):
         
 @app.route("/new_message/<int:product_id>", methods=["POST"])
 def send_message(product_id):
+    check_csrf()
+
     message = request.form["message"]
     messaged_id = forum.get_messaged(product_id)
     forum.send_message(message, product_id, session["id"], messaged_id)
     return redirect(f"/thread/{product_id}/{session["id"]}")
 
-@app.route("/thread/<int:product_id>/<int:user_id>", methods=["GET", "POST"])
+@app.route("/thread/<int:product_id>/<int:user_id>")
 def show_thread(product_id, user_id):
-    if request.method == "GET":
-        seller_id, seller_username, title, messages = forum.get_thread(product_id, user_id)
-        return render_template("thread.html", seller_id=seller_id, seller_username=seller_username, title=title, 
+    seller_id, seller_username, title, messages = forum.get_thread(product_id, user_id)
+    return render_template("thread.html", product_id=product_id, seller_id=seller_id, seller_username=seller_username, title=title, 
                                messages=messages)
 
-@app.route("/new_review", methods=["POST"])
-def make_review():
-    pass
-        
-@app.route("/thumbnail/<int:product_id>")
-def show_thumbnail(product_id):
-    pass
+@app.route("/new_review/<int:product_id>", methods=["POST"])
+def make_review(product_id):
+    check_csrf()
+    
+    title = request.form["review_title"]
+    text = request.form["review_text"] or ""
+    rating = request.form["rating"]
+    review_id = forum.make_review(title, session["id"], text, rating, product_id)
+    return redirect(f"/product/{product_id}#{review_id}")
+
+@app.route("/delete_review/<int:review_id>", methods=["POST"])
+def delete_review(review_id):
+    check_csrf()
+    
+    forum.delete_review(review_id)
+    return redirect(f"/")
 
 @app.route("/profile/<int:user_id>")
 def show_profile(user_id):
@@ -178,10 +207,15 @@ def show_profile(user_id):
         return render_template("profile.html", user=user, user_id=user_id, total_posts=totals[0], products=products, 
                                total_reviews=totals[1], avg_rating=totals[2], reviews=reviews)
 
+@app.route("/thumbnail/<int:product_id>")
+def show_thumbnail(product_id):
+    pass
+
 @app.route("/add_pfp")
 def add_pfp():
     pass
 
 @app.route("/pfp/<int:user_id>")
 def show_pfp(user_id):
+
     pass

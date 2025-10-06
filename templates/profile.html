@@ -19,11 +19,12 @@
         <p><b><a href="/new_product">Julkaise uuden tuotteen</a></p></b>
         <p><b><a href="/logout">Kirjaudu ulos</a></p></b>
 
-        <h4>Sinun viestit</h4>
+        <h4>Sinun keskustelut</h4>
         <ul>
             {% for t in threads %}
             <li>
-                <h4><a href="/thread/{{ t.id }}">{{ t.message }}</a></h4>
+                <h4><a href="/thread/{{ t.product_id }}/{{ t.other_user_id }}">{{ t.other_username }}</a>
+                ({{ t.title }})</h4>
             </li>
             {% endfor %}
         </ul>
@@ -41,17 +42,13 @@
             {% endfor %}
         </ul>
 
-        {% if avg_rating == None %}
-        <h3>Arvostelut (yhteensä {{ total_reviews }}, KA 0/5)</h3>
-        {% else %}
         <h3>Arvostelut (yhteensä {{ total_reviews }}, KA {{ avg_rating }}/5)</h3>
-        {% endif %}
 
         <ul>
             {% for r in reviews %}
             <li>
                 <h4><a href="/product/{{ r.product_id }}">{{ r.title }}</a></h4>
-                <h5>{{ r.review }}</h5>
+                <p>{{ r.review }}</p>
                 <h4>{{ r.rating }}/5</h4>
                 <p>{{ r.time_posted }}</p>
             </li>
