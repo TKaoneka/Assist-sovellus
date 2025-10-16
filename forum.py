@@ -90,30 +90,36 @@ def get_profile(user_id, account_is_owned):
     
     return user, products, reviews, totals
 
-def send_message(message, product_id, messanger, messaged):
-    sql = """INSERT INTO messages (string, product_id, messanger, messaged, time_sent) VALUES (?, ?, ?, ?, datetime('now'))"""
-    db.execute(sql, [message, product_id, messanger, messaged])
+def make_thread(new_message, product_id, sender_id):
+    sql_1 = """SELECT creator_id FROM posts WHERE id = ?"""
+    seller_id = db.query(sql_1, [product_id])[0][0]
+    sql_2 = """INSERT INTO threads (product_id, seller_id, buyer_id) VALUES (?, ?, ?)"""
+    db.execute(sql_2, [product_id, seller_id, sender_id])
+    thread_id =  db.last_insert_id()
+    sql_3 = """INSERT INTO messages (string, thread_id, sender_id, time_sent) VALUES (?, ?, ?, datetime('now'))"""
+    db.execute(sql_3, [new_message, thread_id, sender_id])
+    return thread_id
 
-def get_messaged(product_id):
-    sql = """SELECT creator_id FROM posts WHERE id = ?"""
-    return db.query(sql, [product_id])[0][0]
+def get_thread(thread_id):
+    sql_1 = """SELECT m.id, m.string, m.time_sent, m.sender_id, u.username 
+    FROM messages m, users u 
+    WHERE m.sender_id = u.id AND m.thread_id = ? ORDER BY m.id DESC"""
 
-def get_thread(product_id, user_id):
+    sql_2 = """SELECT p.id, p.title, t.seller_id, u.username 
+               FROM threads t 
+               JOIN posts p ON t.product_id = p.id 
+               JOIN users u ON t.seller_id = u.id 
+               WHERE t.id = ?"""
 
-    sql_1 = """SELECT m.id, m.string, m.time_sent, m.product_id, m.messanger sender_id, m.messaged recipient_id,
-    sender.username sender_username, recipient.username recipient_username
-    FROM messages m JOIN users sender ON sender.id = m.messanger
-    JOIN users recipient ON recipient.id = m.messaged
-    WHERE m.product_id = ?
-    AND (m.messanger = ? OR m.messaged = ?)
-    ORDER BY m.time_sent DESC;"""
+    messages = db.query(sql_1, [thread_id])
+    product_id, title, seller_id, seller_username = db.query(sql_2, [thread_id])[0]
 
-    sql_2 = """SELECT u.id, u.username, p.title 
-    FROM users u, posts p 
-    WHERE p.creator_id = u.id AND p.id = ?"""
-
-    seller_id, seller_username, title = db.query(sql_2, [product_id])[0]
-    return seller_id, seller_username, title, db.query(sql_1, [product_id, user_id, user_id])
+    
+    return messages, product_id, title, seller_id, seller_username
+    
+def send_message(message, thread_id, sender_id):
+    sql = """INSERT INTO messages (string, thread_id, sender_id, time_sent) VALUES (?, ?, ?, datetime('now'))"""
+    db.execute(sql, [message, thread_id, sender_id])
 
 def make_review(title, reviewer, text, rating, product_id):
     sql = """INSERT INTO reviews (title, reviewer, review, rating, time_posted, product_id) 

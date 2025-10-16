@@ -160,20 +160,25 @@ def delete_product(product_id):
             forum.delete_product(product_id)
             return redirect("/")
         
-@app.route("/new_message/<int:product_id>", methods=["POST"])
-def send_message(product_id):
+@app.route("/new_thread/<int:product_id>", methods=["POST"])
+def make_thread(product_id):
+    check_csrf()
+    first_message = request.form["first_message"]
+    thread_id = forum.make_thread(first_message, product_id, session["id"])
+    return redirect(f"/thread/{thread_id}")
+
+@app.route("/thread/<int:thread_id>")
+def show_thread(thread_id):
+    messages, product_id, title, seller_id, seller_username = forum.get_thread(thread_id)
+    return render_template("thread.html", product_id=product_id, title=title, seller_id=seller_id, seller_username=seller_username, messages=messages, thread_id=thread_id)
+
+@app.route("/new_message/<int:thread_id>", methods=["POST"])
+def send_message(thread_id):
     check_csrf()
 
     message = request.form["message"]
-    messaged_id = forum.get_messaged(product_id)
-    forum.send_message(message, product_id, session["id"], messaged_id)
-    return redirect(f"/thread/{product_id}/{session["id"]}")
-
-@app.route("/thread/<int:product_id>/<int:user_id>")
-def show_thread(product_id, user_id):
-    seller_id, seller_username, title, messages = forum.get_thread(product_id, user_id)
-    return render_template("thread.html", product_id=product_id, seller_id=seller_id, seller_username=seller_username, title=title, 
-                               messages=messages)
+    forum.send_message(message, thread_id, session["id"])
+    return redirect(f"/thread/{thread_id}")
 
 @app.route("/new_review/<int:product_id>", methods=["POST"])
 def make_review(product_id):

@@ -9,7 +9,7 @@
         
         <h4><a href="/profile/{{ seller_id }}">{{ seller_username }}</a></h4>
 
-        <form action="/new_message/{{ product_id }}" method="post">
+        <form action="/new_message/{{ thread_id }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
             <h4>Lähetä viesti:</h4>
             <textarea name="message" rows="4" cols="50" required></textarea>
@@ -21,12 +21,12 @@
         <hr />
         {% if m.sender_id == session.id %}
 
-        <p><b>{{ m.sender_username }}</b> ({{ m.time_sent }}):</p>
+        <p><b>{{ m.username }}</b> ({{ m.time_sent }}):</p>
         <p>{{ m.string }}</p>
 
         {% else %}
 
-        <p>{{ m.recipient_username }} ({{ m.time_sent }}):</p>
+        <p><a href="/profile/{{ m.sender_id }}">{{ m.username }}</a> ({{ m.time_sent }}):</p>
         <p>{{ m.string }}</p>
 
         {% endif %}

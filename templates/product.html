@@ -18,11 +18,11 @@
         {% else %}
 
         <hr />
-        <form action="/new_message/{{ product_id }}" method="post">
+        <form action="/new_thread/{{ product_id }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
 
             <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
-            <textarea name="message" rows="4" cols="50" required></textarea> <br />
+            <textarea name="first_message" rows="4" cols="50" required></textarea> <br />
 
         <input type="submit" value="Lähetä">
 
