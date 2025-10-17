@@ -36,14 +36,14 @@ def register():
         password_2 = request.form["new_password2"]
         if password_1 != password_2:
             flash("Salasanat eivät ole samat. Ole hyvä ja kokeile uudestaan")
-            return render_template("create_account.html")
+            return redirect("/register")
         
         hash = generate_password_hash(password_1)
         try:
             user_id = forum.create_account(username, hash)
         except sqlite3.IntegrityError:
             flash("Tunnus on jo käytössä. Ole hyvä ja kokeile uudestaan")
-            return render_template("create_account.html")
+            return redirect("/register")
         session["id"] = user_id
         session["username"] = username
         session["csrf_token"] = secrets.token_hex(16)
@@ -137,6 +137,7 @@ def modify_product(product_id):
 def show_product(product_id):
     title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
     reviews = forum.get_reviews(product_id)
+    print(creator_id)
 
     return render_template("product.html", title=title, creator_id=creator_id, sub_title=sub_title, 
                            descript=descript, time_posted=time_posted, product_id=product_id, reviews=reviews)

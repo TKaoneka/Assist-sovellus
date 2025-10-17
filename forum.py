@@ -18,7 +18,7 @@ def get_search(searched):
 def create_account(username, hash):
     sql = """INSERT INTO users (username, password_hash, descript) 
     VALUES (?, ?, ?)"""
-    db.execute(sql, [username, hash, "NULL"])
+    db.execute(sql, [username, hash, None])
     return db.last_insert_id()
 
 def get_account(username):
