@@ -15,7 +15,7 @@ def check_csrf():
 
 @app.route("/")
 def index():
-    products = forum.get_posts()
+    products = forum.get_products()
     return render_template("index.html", products=products)
 
 @app.route("/search")
@@ -164,7 +164,8 @@ def delete_product(product_id):
 def make_thread(product_id):
     check_csrf()
     first_message = request.form["first_message"]
-    thread_id = forum.make_thread(first_message, product_id, session["id"])
+    product_title = request.form["product_title"]
+    thread_id = forum.make_thread(first_message, product_id, product_title, session["id"])
     return redirect(f"/thread/{thread_id}")
 
 @app.route("/thread/<int:thread_id>")

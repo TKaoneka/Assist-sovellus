@@ -20,6 +20,7 @@
         <hr />
         <form action="/new_thread/{{ product_id }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+            <input type="hidden" name="product_title" value="{{ title }}" />
 
             <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
             <textarea name="first_message" rows="4" cols="50" required></textarea> <br />

@@ -1,7 +1,7 @@
 import db
 
-def get_posts():
-    sql = """SELECT p.title, p.creator_id, p.time_posted, 
+def get_products():
+    sql = """SELECT p.id, p.title, p.creator_id, p.time_posted, 
     u.id, u.username 
     FROM posts p, users u 
     WHERE u.id = p.creator_id ORDER BY p.id DESC"""
@@ -36,8 +36,10 @@ def modify_product(title, subtitle, product_desc, product_id):
     db.execute(sql, [title, subtitle, product_desc, product_id])
 
 def delete_product(product_id):
-    sql = """DELETE FROM posts WHERE id = ?"""
-    db.execute(sql, [product_id])
+    sql_1 = """UPDATE threads SET product_id = NULL WHERE product_id = ?"""
+    sql_2 = """DELETE FROM posts WHERE id = ?"""
+    db.execute(sql_1, [product_id])
+    db.execute(sql_2, [product_id])
 
 def get_product(product_id):
     sql = """SELECT title, creator_id, sub_title, descript, time_posted FROM posts WHERE id = ?"""
@@ -90,12 +92,14 @@ def get_profile(user_id, account_is_owned):
     
     return user, products, reviews, totals
 
-def make_thread(new_message, product_id, sender_id):
+def make_thread(new_message, product_id, product_title, sender_id):
     sql_1 = """SELECT creator_id FROM posts WHERE id = ?"""
     seller_id = db.query(sql_1, [product_id])[0][0]
-    sql_2 = """INSERT INTO threads (product_id, seller_id, buyer_id) VALUES (?, ?, ?)"""
-    db.execute(sql_2, [product_id, seller_id, sender_id])
+
+    sql_2 = """INSERT INTO threads (product_id, product_title, seller_id, buyer_id) VALUES (?, ?, ?, ?)"""
+    db.execute(sql_2, [product_id, product_title, seller_id, sender_id])
     thread_id =  db.last_insert_id()
+
     sql_3 = """INSERT INTO messages (string, thread_id, sender_id, time_sent) VALUES (?, ?, ?, datetime('now'))"""
     db.execute(sql_3, [new_message, thread_id, sender_id])
     return thread_id
@@ -105,11 +109,9 @@ def get_thread(thread_id):
     FROM messages m, users u 
     WHERE m.sender_id = u.id AND m.thread_id = ? ORDER BY m.id DESC"""
 
-    sql_2 = """SELECT p.id, p.title, t.seller_id, u.username 
-               FROM threads t 
-               JOIN posts p ON t.product_id = p.id 
-               JOIN users u ON t.seller_id = u.id 
-               WHERE t.id = ?"""
+    sql_2 = """SELECT t.product_id, t.product_title, t.seller_id, u.username 
+    FROM threads t, users u 
+    WHERE t.seller_id = u.id AND t.id = ?"""
 
     messages = db.query(sql_1, [thread_id])
     product_id, title, seller_id, seller_username = db.query(sql_2, [thread_id])[0]

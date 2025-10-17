@@ -36,6 +36,7 @@ CREATE TABLE likes (
 CREATE TABLE threads (
     id INTEGER PRIMARY KEY,
     product_id INTEGER REFERENCES posts(id),
+    product_title TEXT,
     seller_id INTEGER REFERENCES users(id),
     buyer_id INTEGER REFERENCES users(id)
 );
