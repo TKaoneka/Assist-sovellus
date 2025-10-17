@@ -11,9 +11,9 @@
         {% if session.id == user_id %}
 
         {% if user.has_pfp %}
-        <img src="/pfp/{{ user_id }}" alt="Profile picture" />
+        <img src="/profile_picture/{{ user_id }}" alt="Profile picture" />
         {% else %}
-        <h4><a href="/add_pfp/">Lisää profiilikuva</a></h4>
+        <h4><a href="/add_profile_picture">Lisää profiilikuva</a></h4>
         {% endif %}
 
         <p><b><a href="/new_product">Julkaise uuden tuotteen</a></p></b>

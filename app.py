@@ -216,13 +216,42 @@ def show_profile(user_id):
 
 @app.route("/thumbnail/<int:product_id>")
 def show_thumbnail(product_id):
-    pass
+    thumbnail = forum.get_photo("thumbnail", product_id)
+    if not thumbnail:
+        abort(404)
+    response = make_response(bytes(thumbnail))
+    response.headers.set("Content-Type", "image/jpeg")
 
-@app.route("/add_pfp")
-def add_pfp():
-    pass
+    return response
 
-@app.route("/pfp/<int:user_id>")
+@app.route("/profile_picture/<int:user_id>")
 def show_pfp(user_id):
+    pfp = forum.get_photo("pfp", user_id)
+    if not pfp:
+        abort(404)
 
-    pass
+    response = make_response(bytes(pfp))
+    response.headers.set("Content-Type", "image/jpeg")
+
+    return response
+
+@app.route("/add_profile_picture", methods=["GET", "POST"])
+def add_pfp():
+    if request.method == "GET":
+        return render_template("add_profile_picture.html")
+
+    if request.method == "POST":
+        check_csrf()
+        file = request.files["photo"]
+
+        if not file.filename.endswith(".jpg"):
+            flash("Väärä tiedostomuoto")
+            return redirect("/add_profile_picture")
+        
+        pfp = file.read()
+        if len(pfp) > 100 * 1024:
+            flash("Väärä tiedostomuoto")
+            return redirect("/add_profile_picture")
+        forum.add_photo(pfp, session["id"])
+
+        return redirect(f"/profile/{session["id"]}")

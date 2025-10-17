@@ -138,3 +138,12 @@ def get_reviews(product_id):
 def delete_review(review_id):
     sql = """DELETE FROM reviews WHERE id = ?"""
     db.execute(sql, [review_id])
+
+def get_photo(indicator, id):
+    if indicator == "pfp":
+        sql = """SELECT image FROM Users WHERE id = ?"""
+
+    elif indicator == "thumbnail":
+        sql = """SELECT image FROM posts WHERE id = ?"""
+
+    return db.query(sql, [id])[0][0]

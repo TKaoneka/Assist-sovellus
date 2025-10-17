@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>Assist</title>
+    </head>
+
+    <body>
+        <h1>Assist</h1>
+
+        <form action="/add_profile_picture" method="post">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+
+            <h2>Lisää profiilikuva: </h2>
+            <input type="file" name="thumbnail" accept=".jpg" required/>
+            <br />
+            <br />
+            <input type="submit" name="confirm" value="Lisää" />
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p style="color: red;">{{ messages[0] }}</p>
+            {% endif %}
+        {% endwith %}
+        
+    </body>
+</html>
