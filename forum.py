@@ -68,25 +68,20 @@ def get_profile(user_id, account_is_owned):
 
         sql_6 = """SELECT COUNT(id) total_likes FROM likes WHERE liker = ?"""
 
-        sql_7 = """SELECT m.product_id, p.title, 
-       CASE 
-           WHEN m.messanger = ? THEN u2.username 
-           ELSE u.username 
-       END other_username,
-       CASE 
-           WHEN m.messanger = ? THEN m.messaged 
-           ELSE m.messanger 
-       END other_user_id
-       FROM messages m
-       JOIN posts p ON m.product_id = p.id
-       JOIN users u ON m.messanger = u.id
-       JOIN users u2 ON m.messaged = u2.id
-       WHERE m.messanger = ? OR m.messaged = ? 
-       GROUP BY m.product_id, p.title"""
+        sql_7 = """SELECT t.id, 
+                  CASE 
+                      WHEN t.seller_id = ? THEN u2.username 
+                      ELSE u1.username 
+                  END AS username, 
+                  t.product_title 
+           FROM threads t 
+           JOIN users u1 ON u1.id = t.seller_id 
+           JOIN users u2 ON u2.id = t.buyer_id 
+           WHERE t.seller_id = ? OR t.buyer_id = ?"""
 
         likes = db.query(sql_5, [user_id]) or [0]
         total_likes = db.query(sql_6, [user_id])[0][0] if db.query(sql_6, [user_id]) else {'total_likes': 0}
-        threads = db.query(sql_7, [user_id, user_id, user_id, user_id]) or []
+        threads = db.query(sql_7, [user_id, user_id, user_id]) or []
 
         return user, products, reviews, totals, likes, total_likes, threads
     
