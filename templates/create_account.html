@@ -15,17 +15,17 @@
 
             <p>
                 Luo käyttäjätunnus: <br />
-                <input type="text" name="new_username" size="30" minlength="3" maxlength="20">
+                <input type="text" name="new_username" size="30" minlength="3" maxlength="20" required>
             </p>
 
             <p>
                 Luo salasana (min. 5 merkkiä): <br />
-                <input type="password" name="new_password" size="30" minlength="5" maxlength="200">
+                <input type="password" name="new_password" size="30" minlength="5" maxlength="200" required>
             </p>
 
             <p>
                 Kirjoita salasana uudestaan: <br />
-                <input type="password" name="new_password2" size="30" minlength="5" maxlength="200">
+                <input type="password" name="new_password2" size="30" minlength="5" maxlength="200" required>
             </p>
             
             {% with messages = get_flashed_messages() %}

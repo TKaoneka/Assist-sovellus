@@ -10,14 +10,13 @@
         {% if product_id %}
 
         <h2><a href="/product/{{ product_id }}">{{ title }}</a></h2>
-        <h4>Myyjä: <a href="/profile/{{ seller_id }}">{{ seller_username }}</a></h4>
 
         {% else %}
 
         <h2>{{ title }}</h2><p> (Tämä tuote on poistettu)</p>
-        <h4><a href="/profile/{{ seller_id }}">{{ seller_username }}</a></h4>
 
         {% endif %}
+        <h4>Myyjä: <a href="/profile/{{ seller_id }}">{{ seller_username }}</a></h4>
 
         <form action="/new_message/{{ thread_id }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
