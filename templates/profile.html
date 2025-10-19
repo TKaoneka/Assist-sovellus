@@ -7,11 +7,14 @@
         <h1><a href="/">Assist</a></h1>
 
         <h2>Profiili ({{ user.username }})</h2>
+        {% if user.has_pfp %}
+        <img src="/profile_picture/{{ user_id }}" alt="Profile picture" />
+        {% endif %}
 
         {% if session.id == user_id %}
 
         {% if user.has_pfp %}
-        <img src="/profile_picture/{{ user_id }}" alt="Profile picture" />
+        <p><a href="/add_profile_picture">Vaihda profiilikuva</p>
         {% else %}
         <h4><a href="/add_profile_picture">Lisää profiilikuva</a></h4>
         {% endif %}

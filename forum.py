@@ -31,9 +31,13 @@ def create_product(title, user_id, subtitle, product_type, thumbnail_photo, prod
     db.execute(sql, [title, user_id, subtitle, product_desc, product_type, thumbnail_photo])
     return db.last_insert_id()
 
-def modify_product(title, subtitle, product_desc, product_id):
-    sql = """UPDATE posts SET title = ?, sub_title = ?, descript = ? WHERE id = ?"""
-    db.execute(sql, [title, subtitle, product_desc, product_id])
+def modify_product(title, subtitle, product_desc, thumbnail_photo, product_id):
+    if len(thumbnail_photo) == 0:
+        sql = """UPDATE posts SET title = ?, sub_title = ?, descript = ? WHERE id = ?"""
+        db.execute(sql, [title, subtitle, product_desc, product_id])
+    else:
+        sql = """UPDATE posts SET title = ?, sub_title = ?, descript = ?, image = ? WHERE id = ?"""
+        db.execute(sql, [title, subtitle, product_desc, thumbnail_photo, product_id])
 
 def delete_product(product_id):
     sql_1 = """UPDATE threads SET product_id = NULL WHERE product_id = ?"""
@@ -42,7 +46,8 @@ def delete_product(product_id):
     db.execute(sql_2, [product_id])
 
 def get_product(product_id):
-    sql = """SELECT title, creator_id, sub_title, descript, time_posted FROM posts WHERE id = ?"""
+    sql = """SELECT p.title, p.creator_id, u.username, p.sub_title, p.descript, p.time_posted 
+    FROM posts p, users u WHERE u.id = p.creator_id AND p.id = ?"""
     return db.query(sql, [product_id])[0]
 
 def get_profile(user_id, account_is_owned):
@@ -104,15 +109,15 @@ def get_thread(thread_id):
     FROM messages m, users u 
     WHERE m.sender_id = u.id AND m.thread_id = ? ORDER BY m.id DESC"""
 
-    sql_2 = """SELECT t.product_id, t.product_title, t.seller_id, u.username 
+    sql_2 = """SELECT t.product_id, t.product_title, t.seller_id, t.buyer_id, u.username 
     FROM threads t, users u 
     WHERE t.seller_id = u.id AND t.id = ?"""
 
     messages = db.query(sql_1, [thread_id])
-    product_id, title, seller_id, seller_username = db.query(sql_2, [thread_id])[0]
+    product_id, title, seller_id, buyer_id, seller_username = db.query(sql_2, [thread_id])[0]
 
     
-    return messages, product_id, title, seller_id, seller_username
+    return messages, product_id, title, seller_id, buyer_id, seller_username
     
 def send_message(message, thread_id, sender_id):
     sql = """INSERT INTO messages (string, thread_id, sender_id, time_sent) VALUES (?, ?, ?, datetime('now'))"""
@@ -142,3 +147,7 @@ def get_photo(indicator, id):
         sql = """SELECT image FROM posts WHERE id = ?"""
 
     return db.query(sql, [id])[0][0]
+
+def add_photo(photo, user_id):
+    sql = """UPDATE users SET image = ? WHERE id = ?"""
+    db.execute(sql, [photo, user_id])

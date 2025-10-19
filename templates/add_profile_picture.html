@@ -6,11 +6,11 @@
     <body>
         <h1>Assist</h1>
 
-        <form action="/add_profile_picture" method="post">
+        <form action="/add_profile_picture" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
 
             <h2>Lisää profiilikuva: </h2>
-            <input type="file" name="thumbnail" accept=".jpg" required/>
+            <input type="file" name="photo" accept=".jpg" required/>
             <br />
             <br />
             <input type="submit" name="confirm" value="Lisää" />

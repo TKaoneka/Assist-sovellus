@@ -37,23 +37,24 @@
 
             <p>
                 <b>Mitkä näistä parhaiten kuvaa tuotettasi? (Valitse ainakin yksi)</b><br />
-                <input type="checkbox" name="tags" value="A" /> Elintarvike
-                <input type="checkbox" name="tags" value="B" /> Viihde
-                <input type="checkbox" name="tags" value="C" /> Elektroniikka
-                <input type="checkbox" name="tags" value="D" /> Urheilu
-                <input type="checkbox" name="tags" value="E" /> Muoti
-                <input type="checkbox" name="tags" value="F" /> Lapset
-                <input type="checkbox" name="tags" value="G" /> Kauneus ja hyvinvointi
-                <input type="checkbox" name="tags" value="H" /> Musiikki
-                <input type="checkbox" name="tags" value="I" /> Taide
-                <input type="checkbox" name="tags" value="J" /> Harrastukset
-                <input type="checkbox" name="tags" value="K" /> Koti
-                <input type="checkbox" name="tags" value="L" /> Muu
+                <input type="checkbox" name="tags" value="essential" /> Elintarvike
+                <input type="checkbox" name="tags" value="entertainment" /> Viihde
+                <input type="checkbox" name="tags" value="electronics" /> Elektroniikka
+                <input type="checkbox" name="tags" value="sports" /> Urheilu
+                <input type="checkbox" name="tags" value="fashion" /> Muoti
+                <input type="checkbox" name="tags" value="children" /> Lapset
+                <input type="checkbox" name="tags" value="beauty" /> Kauneus ja hyvinvointi
+                <input type="checkbox" name="tags" value="music" /> Musiikki
+                <input type="checkbox" name="tags" value="art" /> Taide
+                <input type="checkbox" name="tags" value="hobbies" /> Harrastukset
+                <input type="checkbox" name="tags" value="home" /> Koti
+                <input type="checkbox" name="tags" value="other" /> Muu
             </p>
-            
+
             <h3>Haluatko julkaista tuotteesi?</h3>
             <input type="submit" name="confirm" value="Kyllä" />
-            <input type="submit" name="cancel" value="Ei" />
+            <button type="button" onclick="window.location.href='/'">Ei</button>
+
         </form>
 
         <h4>*vaihtoehdot ja tuotteen määrittelemisen ei ole mahdollista myöhemmin muokata. Jos haluat niitä vaihtaa, tee uuden julkaisun*</h4>

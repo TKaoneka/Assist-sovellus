@@ -13,6 +13,10 @@ def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
+def require_login():
+    if "id" not in session:
+        abort(403)
+
 @app.route("/")
 def index():
     products = forum.get_products()
@@ -27,6 +31,8 @@ def search():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
+        if "id" in session:
+            abort(403)
         return render_template("create_account.html")
     
     elif request.method == "POST":
@@ -52,6 +58,8 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
+        if "id" in session:
+            abort(403)
         return render_template("login.html")
     
     elif request.method == "POST":
@@ -75,6 +83,8 @@ def login():
 
 @app.route("/logout")
 def logout():
+    require_login()
+    
     del session["id"]
     del session["username"]
     del session["csrf_token"]
@@ -85,6 +95,7 @@ def logout():
 def create_product():
 
     if request.method == "GET":
+        require_login()
         return render_template("product_create.html")
     
     if request.method == "POST":
@@ -98,15 +109,20 @@ def create_product():
             title = request.form["title"]
             subtitle = request.form["subtitle"]
             product_type = request.form["type"]
-            product_tags = request.form["tags"]
-            tags = product_type + product_tags
+
+            product_tags = ", ".join(request.form.getlist('tags'))
+            if not product_tags:
+                flash("Valitse ainakin yhden tägin")
+                return redirect("/new_product")
+            tags = product_type + ", " + product_tags
+
             thumbnail = request.files["thumbnail"]
             product_desc = request.form["product_description"]
 
             thumbnail_photo = thumbnail.read()
             if len(thumbnail_photo) > 1000 * 1024:
-                message = "Kuva on liian suuri!"
-                return render_template("product_create.html", caution=message)
+                flash("Kuva on liian suuri!")
+                return redirect("/new_product")
             
             product_id = forum.create_product(title, session["id"], subtitle, tags, thumbnail_photo, product_desc)
             return redirect(f"/product/{product_id}")
@@ -115,37 +131,55 @@ def create_product():
 def modify_product(product_id):
 
     if request.method == "GET":
-        title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
+        require_login()
+        product_info = forum.get_product(product_id)
+        title, sub_title, description = product_info[0], product_info[3], product_info[4]
         return render_template("product_modify.html", title=title, sub_title=sub_title, 
-                           descript=descript, product_id=product_id)
+                           descript=description, product_id=product_id)
     
     if request.method == "POST":
         check_csrf()
+        title = request.form["title"]
+        subtitle = request.form["subtitle"]
+        product_desc = request.form["product_description"]
+        original_title = request.form.get("original_title", "")
+        original_subtitle = request.form.get("original_subtitle", "")
+        original_description = request.form.get("original_description", "")
+        title = request.form["title"]
+        if title == "":
+            title = original_title
 
-        if "cancel" in request.form:
-            return redirect(f"/product/{product_id}")
-        
-        if "confirm" in request.form:
-            title = request.form["title"]
-            subtitle = request.form["subtitle"]
-            product_desc = request.form["product_description"]
+        subtitle = request.form["subtitle"]
+        if subtitle == "":
+            subtitle = original_subtitle
 
-            forum.modify_product(title, subtitle, product_desc, product_id)
-            return redirect(f"/product/{product_id}")
+        product_desc = request.form["product_description"]
+        if product_desc == "":
+            product_desc = original_description
+
+        thumbnail = request.files["thumbnail"]
+        thumbnail_photo = thumbnail.read()
+        if len(thumbnail_photo) > 1000 * 1024:
+            flash("Kuva on liian suuri!")
+            return redirect("/new_product")
+
+        forum.modify_product(title, subtitle, product_desc, thumbnail_photo, product_id)
+        return redirect(f"/product/{product_id}")
 
 @app.route("/product/<int:product_id>")
 def show_product(product_id):
-    title, creator_id, sub_title, descript, time_posted = forum.get_product(product_id)
+    title, creator_id, creator_name, sub_title, descript, time_posted = forum.get_product(product_id)
     reviews = forum.get_reviews(product_id)
-    print(creator_id)
 
     return render_template("product.html", title=title, creator_id=creator_id, sub_title=sub_title, 
-                           descript=descript, time_posted=time_posted, product_id=product_id, reviews=reviews)
+                           descript=descript, time_posted=time_posted, product_id=product_id, 
+                           reviews=reviews, creator_name=creator_name)
 
 @app.route("/delete_product/<int:product_id>", methods=["GET", "POST"])
 def delete_product(product_id):
 
     if request.method == "GET":
+        require_login()
         return render_template("product_delete.html", product_id=product_id)
     
     if request.method == "POST":
@@ -163,6 +197,7 @@ def delete_product(product_id):
         
 @app.route("/new_thread/<int:product_id>", methods=["POST"])
 def make_thread(product_id):
+    require_login()
     check_csrf()
     first_message = request.form["first_message"]
     product_title = request.form["product_title"]
@@ -171,11 +206,16 @@ def make_thread(product_id):
 
 @app.route("/thread/<int:thread_id>")
 def show_thread(thread_id):
-    messages, product_id, title, seller_id, seller_username = forum.get_thread(thread_id)
-    return render_template("thread.html", product_id=product_id, title=title, seller_id=seller_id, seller_username=seller_username, messages=messages, thread_id=thread_id)
+    require_login()
+    messages, product_id, title, seller_id, buyer_id, seller_username = forum.get_thread(thread_id)
+    if buyer_id != session["id"] and seller_id != session["id"]:
+        abort(403)
+    return render_template("thread.html", product_id=product_id, title=title, seller_id=seller_id, 
+                           seller_username=seller_username, messages=messages, thread_id=thread_id)
 
 @app.route("/new_message/<int:thread_id>", methods=["POST"])
 def send_message(thread_id):
+    require_login()
     check_csrf()
 
     message = request.form["message"]
@@ -184,6 +224,7 @@ def send_message(thread_id):
 
 @app.route("/new_review/<int:product_id>", methods=["POST"])
 def make_review(product_id):
+    require_login()
     check_csrf()
     
     title = request.form["review_title"]
@@ -194,6 +235,7 @@ def make_review(product_id):
 
 @app.route("/delete_review/<int:review_id>", methods=["POST"])
 def delete_review(review_id):
+    require_login()
     check_csrf()
     
     forum.delete_review(review_id)
@@ -202,7 +244,7 @@ def delete_review(review_id):
 @app.route("/profile/<int:user_id>")
 def show_profile(user_id):
 
-    if session["id"] == user_id:
+    if "id" in session and session["id"] == user_id:
         user, products, reviews, totals, likes, total_likes, threads = forum.get_profile(user_id, True)
 
         return render_template("profile.html", user=user, user_id=user_id, total_posts=totals[0], products=products, 
@@ -238,6 +280,7 @@ def show_pfp(user_id):
 @app.route("/add_profile_picture", methods=["GET", "POST"])
 def add_pfp():
     if request.method == "GET":
+        require_login()
         return render_template("add_profile_picture.html")
 
     if request.method == "POST":
@@ -249,8 +292,8 @@ def add_pfp():
             return redirect("/add_profile_picture")
         
         pfp = file.read()
-        if len(pfp) > 100 * 1024:
-            flash("Väärä tiedostomuoto")
+        if len(pfp) > 1000 * 1024:
+            flash("Kuva on liian suuri")
             return redirect("/add_profile_picture")
         forum.add_photo(pfp, session["id"])
 
