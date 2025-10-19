@@ -82,6 +82,13 @@ input[type="password"] {
     border-radius: 5px;
 }
 
+input[type="number"] {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 textarea {
     padding: 10px;
     margin: 10px 0;
