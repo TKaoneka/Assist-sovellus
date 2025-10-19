@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist | Log In</title>
     </head>
 
@@ -11,15 +12,24 @@
         <h4>Ole hyvä ja kirjaudu sisään.</h4>
         <form action="/login" method="post">
             <p>
-                Käyttäjätunnus:
-                <input type="text" name="login_username" required>
-                <br></br>
-                Salasana:
-                <input type="password" name="login_password" required>
+                Käyttäjätunnus: <br />
+                <input type="text" name="login_username" size="50" required>
             </p>
+            <p>
+                Salasana: <br />
+                <input type="password" name="login_password" size="50" required>
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p style="color: red;">{{ messages[0] }}</p>
+                {% endif %}
+            {% endwith %}
+            
+            <br />
             <input type="submit" value="Log in">
         </form>
 
-        <p><a href="/register">Tee uuden tilin</a></p>
+        <h4><a href="/register">Tee uuden tilin</a></h4>
     </body>
 </html>

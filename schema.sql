@@ -27,12 +27,6 @@ CREATE TABLE reviews (
     product_id INTEGER REFERENCES posts(id)
 );
 
-CREATE TABLE likes (
-    id INTEGER PRIMARY KEY,
-    liker INTEGER REFERENCES users(id),
-    product_id INTEGER REFERENCES posts(id)
-);
-
 CREATE TABLE threads (
     id INTEGER PRIMARY KEY,
     product_id INTEGER REFERENCES posts(id),

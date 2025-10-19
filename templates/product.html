@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist</title>
     </head>
 
@@ -8,7 +9,7 @@
         
         <h2>{{ title }}</h2>
         <h3><a href="/profile/{{ creator_id }}">{{ creator_name }}</a></h3>
-        <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteesta">
+        <img src="/thumbnail/{{ product_id }}" alt="kuva käyttäjän {{ creator_name }} tuotteesta" width="500">
         <h4>{{ sub_title }}</h4>
         <p> {{ time_posted }}</p>
         <p>{{ descript }}</p>
@@ -25,7 +26,7 @@
             <input type="hidden" name="product_title" value="{{ title }}" />
 
             <p><b>Kiinnostaako tuote?</b> Ole hyvä ja lähetä myyjälle viestin!</p>
-            <textarea name="first_message" rows="4" cols="50" required></textarea> <br />
+            <textarea name="first_message" rows="4" cols="50" maxlength="1000" required></textarea> <br />
 
         <input type="submit" value="Lähetä">
 
@@ -38,13 +39,13 @@
             <p><b>Jos olet ostanut tuotteen,</b> ole hyvä ja kerro maailmalle mitä mieltä olet!</p>
 
             <p>Otsikko:</p>
-            <input type="text" name="review_title" required/> <br />
+            <input type="text" name="review_title" maxlength="400" required/> <br />
             
             <p>Kerro enemmän tuotteesta:</p>
-            <textarea name="review_text" rows="4" cols="50"></textarea> <br />
+            <textarea name="review_text" rows="4" cols="50" maxlength="2000"></textarea> <br />
 
             <p>Arvioi: </p>
-            <input type="number" name="rating" min="1" max="5" required><p>/5</p> <br />
+            <p><input type="number" name="rating" min="1" max="5" required>/5</p>
             <input type="submit" value="Lähetä">
         </form>
 
@@ -64,6 +65,7 @@
 
         <form action="/delete_review/{{ r.id }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+            <input type="hidden" name="product_id" value="{{ product_id }}" />
             <input type="submit" value="Poista">
         </form>
         {% endif %}

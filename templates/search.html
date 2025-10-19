@@ -1,18 +1,19 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist</title>
     </head>
 
     <body>
         <h1><a href="/">Assist</a></h1>
         
-        <form action="/search" method="get" size="60" maxlength="200">
+        <form action="/search" method="get">
             <p>
                 Etsi:
                 {% if result %}
-                <input type="text" name="searchbar" value="{{ result }}" />
+                <input type="text" name="searchbar" size="60" maxlength="200" value="{{ result }}" />
                 {% else %}
-                <input type="text" name="searchbar" />
+                <input type="text" name="searchbar" size="60" maxlength="200"/>
                 {% endif %}
             </p>
             <input type="submit" value="Hae">

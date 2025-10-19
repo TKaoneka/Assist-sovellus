@@ -8,7 +8,7 @@ def get_products():
     return db.query(sql)
 
 def get_search(searched):
-    sql = """SELECT p.title, p.creator_id, p.time_posted, 
+    sql = """SELECT p.id, p.title, p.creator_id, p.time_posted, 
     u.id, u.username 
     FROM posts p, users u 
     WHERE u.id = p.creator_id AND p.title LIKE ? ORDER BY p.id DESC"""
@@ -69,11 +69,8 @@ def get_profile(user_id, account_is_owned):
     totals = totals_result[0] if totals_result else {'total_posts': 0, 'total_reviews': 0, 'avg_rating': 0}
 
     if account_is_owned:
-        sql_5 = """SELECT product_id FROM likes WHERE liker = ?"""
 
-        sql_6 = """SELECT COUNT(id) total_likes FROM likes WHERE liker = ?"""
-
-        sql_7 = """SELECT t.id, 
+        sql_5 = """SELECT t.id, 
                   CASE 
                       WHEN t.seller_id = ? THEN u2.username 
                       ELSE u1.username 
@@ -83,12 +80,10 @@ def get_profile(user_id, account_is_owned):
            JOIN users u1 ON u1.id = t.seller_id 
            JOIN users u2 ON u2.id = t.buyer_id 
            WHERE t.seller_id = ? OR t.buyer_id = ?"""
+        
+        threads = db.query(sql_5, [user_id, user_id, user_id]) or []
 
-        likes = db.query(sql_5, [user_id]) or [0]
-        total_likes = db.query(sql_6, [user_id])[0][0] if db.query(sql_6, [user_id]) else {'total_likes': 0}
-        threads = db.query(sql_7, [user_id, user_id, user_id]) or []
-
-        return user, products, reviews, totals, likes, total_likes, threads
+        return user, products, reviews, totals, threads
     
     return user, products, reviews, totals
 

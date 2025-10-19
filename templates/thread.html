@@ -1,15 +1,16 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist</title>
     </head>
 
     <body>
-        <h1>Assist</h1>
+        <h1><a href="/">Assist</a></h1>
         
         {% if product_id %}
 
         <h2><a href="/product/{{ product_id }}">{{ title }}</a></h2>
-        <h4><a href="/profile/{{ seller_id }}">{{ seller_username }}</a></h4>
+        <h4>Myyjä: <a href="/profile/{{ seller_id }}">{{ seller_username }}</a></h4>
 
         {% else %}
 

@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist | Create account</title>
     </head>
 
@@ -11,15 +12,20 @@
         <h3>Tervetuloa Assist-sovellukseen!</h3>
         <h4>Ole hyvä ja tee uuden tilin.</h4>
         <form action="/register" method="post">
+
             <p>
-                Luo käyttäjätunnus: 
-                <input type="text" name="new_username" maxlength="20">
-                <br></br>
-                Luo salasana: 
-                <input type="password" name="new_password" maxlength="200">
-                <br></br>
-                Kirjoita salasana uudestaan: 
-                <input type="password" name="new_password2" maxlength="200">
+                Luo käyttäjätunnus: <br />
+                <input type="text" name="new_username" size="30" minlength="3" maxlength="20">
+            </p>
+
+            <p>
+                Luo salasana (min. 5 merkkiä): <br />
+                <input type="password" name="new_password" size="30" minlength="5" maxlength="200">
+            </p>
+
+            <p>
+                Kirjoita salasana uudestaan: <br />
+                <input type="password" name="new_password2" size="30" minlength="5" maxlength="200">
             </p>
             
             {% with messages = get_flashed_messages() %}
@@ -27,8 +33,9 @@
                     <p style="color: red;">{{ messages[0] }}</p>
                 {% endif %}
             {% endwith %}
-
-            <input type="submit" value="Create account">
+            <br />
+            <input type="submit" value="Luo tili">
         </form>
+        <p><a href="/login">Kirjaudu sisään</a></b></p>
     </body>
 </html>

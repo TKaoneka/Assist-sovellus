@@ -101,59 +101,58 @@ def create_product():
     if request.method == "POST":
         check_csrf()
 
-        if "cancel" in request.form:
-            return redirect("/")
-        
-        if "confirm" in request.form:
+        title = request.form["title"]
+        subtitle = request.form["subtitle"]
+        product_type = request.form["type"]
 
-            title = request.form["title"]
-            subtitle = request.form["subtitle"]
-            product_type = request.form["type"]
+        product_tags = ", ".join(request.form.getlist('tags'))
+        if not product_tags:
+            flash("Valitse ainakin yhden tägin")
+            return redirect("/new_product")
+        tags = product_type + ", " + product_tags
 
-            product_tags = ", ".join(request.form.getlist('tags'))
-            if not product_tags:
-                flash("Valitse ainakin yhden tägin")
-                return redirect("/new_product")
-            tags = product_type + ", " + product_tags
+        thumbnail = request.files["thumbnail"]
+        product_desc = request.form["product_description"]
 
-            thumbnail = request.files["thumbnail"]
-            product_desc = request.form["product_description"]
-
-            thumbnail_photo = thumbnail.read()
-            if len(thumbnail_photo) > 1000 * 1024:
-                flash("Kuva on liian suuri!")
-                return redirect("/new_product")
+        thumbnail_photo = thumbnail.read()
+        if len(thumbnail_photo) > 1000 * 1024:
+            flash("Kuva on liian suuri!")
+            return redirect("/new_product")
             
-            product_id = forum.create_product(title, session["id"], subtitle, tags, thumbnail_photo, product_desc)
-            return redirect(f"/product/{product_id}")
+        product_id = forum.create_product(title, session["id"], subtitle, tags, thumbnail_photo, product_desc)
+        return redirect(f"/product/{product_id}")
 
 @app.route("/modify_product/<int:product_id>", methods=["GET", "POST"])
 def modify_product(product_id):
 
     if request.method == "GET":
         require_login()
-        product_info = forum.get_product(product_id)
-        title, sub_title, description = product_info[0], product_info[3], product_info[4]
-        return render_template("product_modify.html", title=title, sub_title=sub_title, 
+        try:
+            product_info = forum.get_product(product_id)
+            if session["id"] != product_info[1]:
+                abort(403)
+            title, sub_title, description = product_info[0], product_info[3], product_info[4]
+            return render_template("product_modify.html", title=title, sub_title=sub_title, 
                            descript=description, product_id=product_id)
+        except IndexError:
+            abort(404)
     
     if request.method == "POST":
         check_csrf()
         title = request.form["title"]
         subtitle = request.form["subtitle"]
         product_desc = request.form["product_description"]
+
         original_title = request.form.get("original_title", "")
         original_subtitle = request.form.get("original_subtitle", "")
         original_description = request.form.get("original_description", "")
-        title = request.form["title"]
+
         if title == "":
             title = original_title
 
-        subtitle = request.form["subtitle"]
         if subtitle == "":
             subtitle = original_subtitle
 
-        product_desc = request.form["product_description"]
         if product_desc == "":
             product_desc = original_description
 
@@ -180,6 +179,9 @@ def delete_product(product_id):
 
     if request.method == "GET":
         require_login()
+        id = forum.get_product(product_id)[1]
+        if session["id"] != id:
+            abort(403)
         return render_template("product_delete.html", product_id=product_id)
     
     if request.method == "POST":
@@ -187,9 +189,6 @@ def delete_product(product_id):
 
         if "delete_product" in request.form:
             return render_template("product_delete.html", product_id=product_id)
-        
-        if "cancel" in request.form:
-            return redirect(f"/product/{product_id}")
         
         if "confirm" in request.form:
             forum.delete_product(product_id)
@@ -239,17 +238,17 @@ def delete_review(review_id):
     check_csrf()
     
     forum.delete_review(review_id)
-    return redirect(f"/")
+    product_id = request.form["product_id"]
+    return redirect(f"/product/{product_id}")
 
 @app.route("/profile/<int:user_id>")
 def show_profile(user_id):
 
     if "id" in session and session["id"] == user_id:
-        user, products, reviews, totals, likes, total_likes, threads = forum.get_profile(user_id, True)
+        user, products, reviews, totals, threads = forum.get_profile(user_id, True)
 
         return render_template("profile.html", user=user, user_id=user_id, total_posts=totals[0], products=products, 
-                               total_reviews=totals[1], avg_rating=totals[2], reviews=reviews, 
-                               total_likes=total_likes, likes=likes, threads=threads)
+                               total_reviews=totals[1], avg_rating=totals[2], reviews=reviews, threads=threads)
     else:
         user, products, reviews, totals = forum.get_profile(user_id, False)
 
@@ -278,13 +277,14 @@ def show_pfp(user_id):
     return response
 
 @app.route("/add_profile_picture", methods=["GET", "POST"])
-def add_pfp():
+def add_profile_picture():
     if request.method == "GET":
         require_login()
         return render_template("add_profile_picture.html")
 
     if request.method == "POST":
         check_csrf()
+        
         file = request.files["photo"]
 
         if not file.filename.endswith(".jpg"):

@@ -1,40 +1,45 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist | Modify product</title>
     </head>
 
     <body>
-        <h1>Assist</h1>
+        <h1><a href="/">Assist</a></h1>
         <form action="/modify_product/{{ product_id }}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+
+            <input type="hidden" name="original_title" value="{{ title }}" />
+            <input type="hidden" name="original_subtitle" value="{{ sub_title }}" />
+            <input type="hidden" name="original_description" value="{{ descript }}" />
+
             <h4>
                 Otsikko: <br />
-                <input type="text" name="title" value="{{ title }}" required/>
+                <input type="text" name="title" value="{{ title }}" size="60" maxlength="400"/>
             </h4>
 
             <p>
                 <b>Alaotsikko:</b> <br />
-                <textarea name="subtitle" rows="2" cols="40" value="{{ sub_title }}"></textarea>
+                <textarea name="subtitle" rows="2" cols="50" maxlength="400">{{ sub_title }}</textarea>
             </p>
+            <br />
 
             <p>
-                <b>Kyseessä on {{ product_type }}</b>
-            </p>
-
-            <p>
-                <b>Valitsemasi kuva:</b>
-                <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteestasi" required>
+                <b>Valitsemasi kuva:</b> <br />
+                <img src="/thumbnail/{{ product_id }}" alt="kuva tuotteestasi" width="500"> <br />
+                <b>Vaihda valitsemasi kuva</b> (maksimissaan 1 MT):
+                <input type="file" name="thumbnail" accept=".jpg" />
             </p>
             
 
             <p>
                 <b>Kuvaus tuotteestasi:</b><br />
-                <textarea name="product_description" rows="5" cols="50" value="{{ descript }}" required></textarea>
+                <textarea name="product_description" rows="5" cols="50" maxlength="2000">{{ descript }}</textarea>
             </p>
 
             <h3>Haluatko muokata tuotteesi?</h3>
                 <input type="submit" name="confirm" value="Kyllä" />
-                <input type="submit" name="cancel" value="Ei" />
+                <button type="button" onclick="window.location.href='/product/{{ product_id }}'">Ei</button>
         </form>
     </body>
 </html>

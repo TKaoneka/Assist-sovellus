@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link rel="stylesheet" href="/static/main.css">
         <title>Assist | {{ user.username }}'s profile</title>
     </head>
 
@@ -8,21 +9,31 @@
 
         <h2>Profiili ({{ user.username }})</h2>
         {% if user.has_pfp %}
-        <img src="/profile_picture/{{ user_id }}" alt="Profile picture" />
+        <img src="/profile_picture/{{ user_id }}" alt="Käyttäjän {{ user.username }} profiilikuva" width="500"/>
         {% endif %}
 
         {% if session.id == user_id %}
 
         {% if user.has_pfp %}
-        <p><a href="/add_profile_picture">Vaihda profiilikuva</p>
+        <p>
+            <a href="/add_profile_picture">Vaihda profiilikuva</a>
+        </p>
+
         {% else %}
-        <h4><a href="/add_profile_picture">Lisää profiilikuva</a></h4>
+        <p>
+            <a href="/add_profile_picture">Lisää profiilikuva</a>
+        </p>
+
         {% endif %}
 
-        <p><b><a href="/new_product">Julkaise uuden tuotteen</a></p></b>
-        <p><b><a href="/logout">Kirjaudu ulos</a></p></b>
+        <p>
+            <b><a href="/new_product">Julkaise uuden tuotteen</a></b>
+        </p>
+        <p>
+            <b><a href="/logout">Kirjaudu ulos</a></b>
+        </p>
 
-        <h4>Sinun keskustelut</h4>
+        <h3>Sinun keskustelut</h3>
         
         {% for t in threads %}
         <h4><a href="/thread/{{ t.id }}">{{ t.username }}</a>
@@ -30,7 +41,7 @@
         {% endfor %}
 
         {% endif %}
-
+        <br />
         <h3>Tuotteet (yhteensä {{ total_posts }})</h3>
         <ul>
             {% for p in products %}
@@ -41,6 +52,7 @@
             </li>
             {% endfor %}
         </ul>
+        <br />
 
         <h3>Arvostelut (yhteensä {{ total_reviews }}, KA {{ avg_rating }}/5)</h3>
 
@@ -54,19 +66,6 @@
             </li>
             {% endfor %}
         </ul>
-        
-        {% if session.id == user_id %}
-        <h3>Sinun tykkäykset (yhteensä {{ total_likes }})</h3>
-        <ul>
-            {% for l in likes %}
-            <li>
-                <h4><a href="/product/{{ l.product_id }}">{{ l.title }}</a></h4>
-                <h3>{{ l.rating }}</h3>
-                <p>{{ l.time_posted }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
 
     </body>
 </html>
