@@ -39,6 +39,18 @@ Sovellus toimi palautuksen vaatimuksien mukaisesti:
 * Jokin viestiketjun sisällöt eivät lataannu kunnolla
 * Sovelluksen pikku- ja profiilikuva piirteet eivät vieläkään toimi
 
+Lopullinen palautus (19.10.2025)
+Sovellus toimii lopullisen palautuksen vaatimuksien mukaisesti!
+* Käyttäjä pystyy katsomaan käyttäjäsivuja, missä näkyy eri tilastoja; kuinka monta tuotetta ja arviointia käyttäjä on tehnyt (sekä arviointien KA)
+* Käyttäjä voi valita useamman luokan tuote-tietokohteelle sekä, jos on kyseessä tuote tai palvelu
+* Käyttäjä pystyy lähettämään toisin käyttäjän tietokohteeseen lisätietoa (eli arvioinnit), sekä viestitellä myyjän kanssa
+* Sovellus tarkistaa jos käyttäjällä on lupaa lähettää lomakkeen vai ei (siis jokaisessa sovelluksen lomakkeissa on tarkistus; käyttäjän luvan sekä lomakkeen pätevyyttä tarkastetaan
+* Käyttäjä voi lisätä, poistaa ja muokata hänen tekemänsä arvioinnit ja ilmoitukset
+* Sovelluksen ulkoasu on tehty ja nätti
+* Muita kehityksiä ja muutoksia mainitsematta, sovellusta tehtiin luultavasti nelosen arvosanan mukaisesti
+
+Kiitos kurssista!
+
 Saat sovelluksen toimimaan näin:
 1. Kloonaa repositorion
 2. Avaa Bash ja kirjoita seuraavat komennot:
@@ -46,5 +58,5 @@ Saat sovelluksen toimimaan näin:
 - **python3 -m venv venv**
 - **source venv/bin/activate**
 - **pip install flask**
-- **sqlite3 database.db < assist.sql**
+- **sqlite3 database.db < schema.sql**
 - **flask run**
